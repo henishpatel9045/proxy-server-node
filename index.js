@@ -1,7 +1,7 @@
 const httpProxy = require("http-proxy");
 
 const target = "http://3.6.211.9:5100"
-
+ 
 const proxy = httpProxy.createProxyServer({
     target: target,
 })
