@@ -1,20 +1,19 @@
-const httpProxy = require("http-proxy");
+const http = require('http');
+const httpProxy = require('http-proxy');
 
-const target = "http://3.6.211.9:5100"
- 
-const proxy = httpProxy.createProxyServer({
-    target: target,
-})
+const proxy = httpProxy.createProxyServer({});
 
-proxy.on("error", (err, req, res) => {
-    res.writeHead(500, {
-        'Content-Type': 'text/plain'
-    });
-    res.end("Something went wrong, And we are reporting a custom error message.")
-})
+const server = http.createServer((req, res) => {
+  const proxyUrl = req.headers['x-proxy-url'];
 
-const port = 3000;
+  if (proxyUrl) {
+    proxy.web(req, res, { target: proxyUrl });
+  } else {
+    res.statusCode = 400;
+    res.end('No X-Proxy-Url header specified');
+  }
+});
 
-proxy.listen(port, () => {
-    console.log(`Proxy server is running on port ${port}........`);
+server.listen(8080, () => {
+  console.log('Proxy server listening on port 8080');
 });
